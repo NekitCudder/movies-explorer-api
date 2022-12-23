@@ -30,7 +30,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с данным email уже сущесвтует'));
+        next(new ConflictError('Пользователь с данным email уже существует'));
       } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные.'));
       } else {
@@ -41,19 +41,26 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
-    .then((user) => {
-      if (user) {
-        res.send({ data: user });
+  User.findOne({ email })
+    .then((userEmail) => {
+      if (userEmail) {
+        throw new ConflictError('Пользователь с данным email уже существует');
       } else {
-        throw new NotFoundError('Запрашиваемый пользователь не найден.');
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные.'));
-      } else {
-        next(err);
+        User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+          .then((user) => {
+            if (user) {
+              res.send({ data: user });
+            } else {
+              throw new NotFoundError('Запрашиваемый пользователь не найден.');
+            }
+          })
+          .catch((err) => {
+            if (err.name === 'ValidationError') {
+              next(new BadRequestError('Переданы некорректные данные.'));
+            } else {
+              next(err);
+            }
+          });
       }
     });
 };
