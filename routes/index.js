@@ -19,3 +19,5 @@ router.use('/movies', movieRouter);
 router.use('/*', () => {
   throw new NotFoundError('Запрашиваемая страница не найдена.');
 });
+
+module.exports = router;
