@@ -72,6 +72,6 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.logOut = (req, res) => {
-  res.clearCookie('jwt', { secure: 'true', sameSite: 'none' }).send();
+module.exports.signOut = (req, res) => {
+  res.clearCookie('jwt', { secure: 'true', sameSite: 'none' }).send({ message: 'Успешный выход из системы' });
 };

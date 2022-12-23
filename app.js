@@ -2,19 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const userRouter = require('./routes/users');
-const movieRouter = require('./routes/movie');
-const NotFoundError = require('./errors/NotFoundError');
-const { login, createUser, logOut } = require('./controllers/users');
-const { auth } = require('./middlewares/auth');
+const router = require('./routes/index');
+const errorHandler = require('./middlewares/errorHandler');
+const limiter = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { loginValidation, userValidation } = require('./middlewares/validations');
+const { dataBase, PORT } = require('./utils/config');
 
 mongoose.set('strictQuery', false);
-
-const { PORT = 3000 } = process.env;
 
 const app = express();
 
@@ -47,9 +44,7 @@ app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 app.use(cookieParser());
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
-
-app.use(requestLogger);
+mongoose.connect(dataBase);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -57,31 +52,12 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signin', loginValidation, login);
-app.post('/signup', userValidation, createUser);
-app.post('/logout', logOut);
-app.use(auth);
-app.use('/users', userRouter);
-app.use('/movies', movieRouter);
-
-app.use('/*', () => {
-  throw new NotFoundError('Запрашиваемая страница не найдена.');
-});
-
+app.use(router);
 app.use(errorLogger);
-
+app.use(requestLogger);
+app.use(helmet());
+app.use(limiter);
 app.use(errors());
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT);
