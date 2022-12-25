@@ -2,6 +2,7 @@ const Movie = require('../models/movie');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
+const errorMessagesMovies = require('../errors/ErrorMessages');
 
 module.exports.getMovie = (req, res, next) => {
   Movie.find({ owner: req.user._id })
@@ -16,7 +17,7 @@ module.exports.createMovie = (req, res, next) => {
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные.'));
+        next(new BadRequestError(errorMessagesMovies.badRequestError));
       } else {
         next(err);
       }
@@ -26,7 +27,7 @@ module.exports.createMovie = (req, res, next) => {
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params._id)
     .orFail(() => {
-      throw new NotFoundError('Запрашиваемая карточка не найдена.');
+      throw new NotFoundError(errorMessagesMovies.notFoundError);
     })
     .then((data) => {
       if (data.owner.toString() === req.user._id) {
@@ -36,7 +37,7 @@ module.exports.deleteMovie = (req, res, next) => {
           })
           .catch(next);
       } else {
-        throw new ForbiddenError('Недостаточно прав');
+        throw new ForbiddenError(errorMessagesMovies.forbiddenError);
       }
     })
     .catch(next);
