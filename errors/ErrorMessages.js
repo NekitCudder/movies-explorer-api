@@ -20,5 +20,5 @@ const errorMessagesRoutes = {
 };
 
 module.exports = {
-  errorMessagesMovies, errorMessagesUsers, errorMessagesAuth, errorMessagesRoutes
+  errorMessagesMovies, errorMessagesUsers, errorMessagesAuth, errorMessagesRoutes,
 };
