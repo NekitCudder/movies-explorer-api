@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { urlRegExp } = require('../middlewares/validations');
 
-const cardSchema = new mongoose.Schema(
+const movieSchema = new mongoose.Schema(
   {
     country: {
       type: String,
@@ -67,4 +67,4 @@ const cardSchema = new mongoose.Schema(
   },
   { versionKey: false },
 );
-module.exports = mongoose.model('card', cardSchema);
+module.exports = mongoose.model('movie', movieSchema);

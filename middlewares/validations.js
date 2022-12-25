@@ -32,16 +32,16 @@ module.exports.idValidation = celebrate({
 
 module.exports.movieValidation = celebrate({
   body: Joi.object().keys({
-    country: Joi.string().required().min(2).max(30),
-    director: Joi.string().required().min(2).max(30),
+    country: Joi.string().required(),
+    director: Joi.string().required(),
     duration: Joi.number().required(),
-    year: Joi.string().required().min(4).max(4),
-    description: Joi.string().required().min(2),
+    year: Joi.string().required(),
+    description: Joi.string().required(),
     image: Joi.string().required().pattern(this.urlRegExp),
     trailerLink: Joi.string().required().pattern(this.urlRegExp),
     thumbnail: Joi.string().required().pattern(this.urlRegExp),
     movieId: Joi.number().required(),
-    nameRU: Joi.string().required().min(2).max(30),
-    nameEN: Joi.string().required().min(2).max(30),
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
   }),
 });

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const router = require('./routes/index');
+const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 const limiter = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -51,12 +51,13 @@ app.get('/crash-test', () => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
-
-app.use(router);
-app.use(errorLogger);
 app.use(requestLogger);
 app.use(helmet());
 app.use(limiter);
+
+app.use(router);
+
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 

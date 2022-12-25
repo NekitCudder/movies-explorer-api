@@ -10,7 +10,7 @@ const router = express();
 
 router.post('/signin', loginValidation, login);
 router.post('/signup', userValidation, createUser);
-router.post('/signout', loginValidation, signOut);
+router.post('/signout', auth, signOut);
 
 router.use(auth);
 router.use('/users', userRouter);
