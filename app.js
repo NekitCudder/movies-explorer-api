@@ -19,7 +19,7 @@ const app = express();
 const allowedCors = [
   'https://diploma.nekitcudder.nomoredomains.club',
   'http://diploma.nekitcudder.nomoredomains.club',
-  'localhost:3000',
+  'http://localhost:3000',
 ];
 
 app.use(cors({
