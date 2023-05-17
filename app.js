@@ -16,17 +16,18 @@ mongoose.set('strictQuery', false);
 
 const app = express();
 
-const allowedCors = [
+const allowedOrigins = [
   'https://diploma.nekitcudder.nomoredomains.club',
   'http://diploma.nekitcudder.nomoredomains.club',
   'http://localhost:3000',
 ];
 
-app.use(cors({
-  origin: allowedCors,
+const allowedCord = {
+  origin: allowedOrigins,
   credentials: true,
-}));
+};
 
+app.use(cors(allowedCord));
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 app.use(cookieParser());
