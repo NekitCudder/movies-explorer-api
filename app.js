@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+// const cors = require('cors');
 const { errors } = require('celebrate');
 const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
@@ -16,18 +16,38 @@ mongoose.set('strictQuery', false);
 
 const app = express();
 
-const allowedOrigins = [
+const allowedCors = [
   'https://diploma.nekitcudder.nomoredomains.club',
   'http://diploma.nekitcudder.nomoredomains.club',
   'http://localhost:3000',
 ];
 
-const allowedCord = {
-  origin: allowedOrigins,
-  credentials: true,
-};
+// const allowedCord = {
+//   origin: allowedOrigins,
+//   credentials: true,
+// };
+// app.use(cors(allowedCors));
 
-app.use(cors(allowedCord));
+// eslint-disable-next-line consistent-return
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  const { method } = req;
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+  const requestHeaders = req.headers['access-control-request-headers'];
+
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+
+  if (method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+    res.header('Access-Control-Allow-Headers', requestHeaders);
+    return res.status(200).send();
+  }
+  next();
+});
+
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 app.use(cookieParser());
