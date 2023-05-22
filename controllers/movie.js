@@ -6,7 +6,7 @@ const errorMessagesMovies = require('../errors/ErrorMessages');
 
 module.exports.getMovie = (req, res, next) => {
   Movie.find({ owner: req.user._id })
-    .then((movies) => res.send({ data: movies }))
+    .then((movies) => res.send(movies))
     .catch(next);
 };
 
@@ -14,7 +14,7 @@ module.exports.createMovie = (req, res, next) => {
   Movie.create({
     ...req.body, owner: req.user._id,
   })
-    .then((movie) => res.send({ data: movie }))
+    .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(errorMessagesMovies.badRequestError));
@@ -32,9 +32,7 @@ module.exports.deleteMovie = (req, res, next) => {
     .then((data) => {
       if (data.owner.toString() === req.user._id) {
         Movie.findByIdAndRemove(req.params._id)
-          .then((newMovie) => {
-            res.send({ data: newMovie });
-          })
+          .then((newMovie) => res.send(newMovie))
           .catch(next);
       } else {
         throw new ForbiddenError(errorMessagesMovies.forbiddenError);
