@@ -50,7 +50,7 @@ module.exports.updateUser = (req, res, next) => {
         User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
           .then((user) => {
             if (user) {
-              res.send({ data: user });
+              res.send(user);
             } else {
               throw new NotFoundError(errorMessagesUsers.notFoundError);
             }
