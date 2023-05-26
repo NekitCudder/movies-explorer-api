@@ -42,29 +42,21 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
-  User.findOne({ email })
-    .then((userEmail) => {
-      if (userEmail) {
-        throw new ConflictError(errorMessagesUsers.conflictError);
+  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+    .then((user) => {
+      if (user) {
+        res.send(user);
       } else {
-        User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
-          .then((user) => {
-            if (user) {
-              res.send(user);
-            } else {
-              throw new NotFoundError(errorMessagesUsers.notFoundError);
-            }
-          })
-          .catch((err) => {
-            if (err.name === 'ValidationError') {
-              next(new BadRequestError(errorMessagesUsers.badRequestError));
-            } else {
-              next(err);
-            }
-          });
+        throw new NotFoundError(errorMessagesUsers.notFoundError);
       }
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(errorMessagesUsers.badRequestError));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.login = (req, res, next) => {
